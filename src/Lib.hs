@@ -10,11 +10,14 @@ someFunc = putStrLn "someFunc"
 
 -- 複数ディレクトリ配下のファイルのパスを
 -- ネストしないリストで返す
-getDirectoriesContentPaths :: [String] -> IO [String]
-getDirectoriesContentPaths paths = concat <$> mapM getDirectoryContentPaths paths
+-- 第一引数はフィルタリング関数
+getDirectoriesContentPaths :: (String -> Bool) -> [String] -> IO [String]
+getDirectoriesContentPaths f paths= concat <$> mapM (getDirectoryContentPaths f) paths
 
 -- ディレクトリ配下のファイルのパスを返す
-getDirectoryContentPaths :: String -> IO [String]
-getDirectoryContentPaths path = 
-    map (\x -> path ++ "/" ++ x) <$> getDirectoryContents path
+-- 第一引数はフィルタリング関数
+getDirectoryContentPaths :: (String -> Bool) -> String -> IO [String]
+getDirectoryContentPaths f path = 
+    map (\x -> path ++ "/" ++ x) . filter f <$> getDirectoryContents path
+
 
