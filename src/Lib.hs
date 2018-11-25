@@ -1,6 +1,6 @@
 module Lib
     ( someFunc,
-    fileListFromPaths
+    getDirectoriesContentPaths
     ) where
 
 import System.Directory
@@ -8,13 +8,13 @@ import System.Directory
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
 
-fileListFromPaths :: [String] -> IO [String]
-fileListFromPaths paths = do
-    ls <- mapM f paths
-    return $ concat ls
-        where
-            f path = do
-                fs <- getDirectoryContents path
-                let fs2 = map (\x -> path ++ "/" ++ x) fs
-                return fs2
+-- 複数ディレクトリ配下のファイルのパスを
+-- ネストしないリストで返す
+getDirectoriesContentPaths :: [String] -> IO [String]
+getDirectoriesContentPaths paths = concat <$> mapM getDirectoryContentPaths paths
+
+-- ディレクトリ配下のファイルのパスを返す
+getDirectoryContentPaths :: String -> IO [String]
+getDirectoryContentPaths path = 
+    map (\x -> path ++ "/" ++ x) <$> getDirectoryContents path
 

@@ -9,6 +9,6 @@ meta_data_dirs = [
 
 main :: IO ()
 main =  do
-    lis <- fileListFromPaths meta_data_dirs
+    lis <- getDirectoriesContentPaths meta_data_dirs
     print lis
 
