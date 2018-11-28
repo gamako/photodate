@@ -24,6 +24,10 @@ dependencies:
 
 library:
   source-dirs: src
+  dependencies:
+  - directory
+  - aeson
+  - bytestring
 
 executables:
   photodate-exe:
@@ -35,6 +39,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - photodate
+    - regex-posix
 
 tests:
   photodate-test:
@@ -46,3 +51,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - photodate
+    - hspec
