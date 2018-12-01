@@ -52,3 +52,4 @@ tests:
     dependencies:
     - photodate
     - hspec
+    - regex-posix

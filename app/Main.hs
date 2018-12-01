@@ -8,6 +8,11 @@ meta_data_dirs = [
     "../../data/72157675601142498_06440730dcc4_part2"
     ]
 
+test_dirs = [
+    "../../testdata/part1",
+    "../../testdata/part2"
+    ]
+
 file_filter :: String -> Bool
 file_filter x = (x =~ "photo_.*\\.json" :: [[String]]) /= []
 

@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE BangPatterns #-}
 
 module Lib
     ( someFunc,
@@ -13,6 +14,7 @@ import Control.Applicative
 import System.Directory
 import qualified Data.ByteString.Lazy.Internal as LSI
 import qualified Data.ByteString.Lazy as LS
+import Debug.Trace
 
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
@@ -21,13 +23,14 @@ someFunc = putStrLn "someFunc"
 -- ネストしないリストで返す
 -- 第一引数はフィルタリング関数
 getDirectoriesContentPaths :: (String -> Bool) -> [String] -> IO [String]
-getDirectoriesContentPaths f paths= concat <$> mapM (getDirectoryContentPaths f) paths
+getDirectoriesContentPaths f paths = concat <$> mapM (getDirectoryContentPaths f) paths
 
 -- ディレクトリ配下のファイルのパスを返す
 -- 第一引数はフィルタリング関数
 getDirectoryContentPaths :: (String -> Bool) -> String -> IO [String]
 getDirectoryContentPaths f path = 
     map (\x -> path ++ "/" ++ x) . filter f <$> getDirectoryContents path
+
 
 -- jsonから読み込むファイル情報
 data PhotoInfo = PhotoInfo { photo_id :: String, date_taken :: String } deriving (Show, Eq)
@@ -50,7 +53,7 @@ readDirectoriesPhotoInfo f ds = do
         readOrError :: String -> IO (Either String PhotoInfo)
         readOrError path = do
             content <- LS.readFile path
-            let info = readPhotoInfo content
+            let !info = readPhotoInfo content
             return $ case info of
                  Just x -> Right x
                  _ -> Left path
