@@ -4,13 +4,15 @@ module Lib
     ( someFunc,
     getDirectoriesContentPaths,
     PhotoInfo (..),
-    readPhotoInfo
+    readPhotoInfo,
+    readDirectoriesPhotoInfo
     ) where
 
 import Data.Aeson
 import Control.Applicative
 import System.Directory
-import qualified Data.ByteString.Lazy.Internal as S
+import qualified Data.ByteString.Lazy.Internal as LSI
+import qualified Data.ByteString.Lazy as LS
 
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
@@ -36,5 +38,20 @@ instance FromJSON PhotoInfo where
                                      <*> (v .: "date_taken")
 
 -- jsonから変換
-readPhotoInfo :: S.ByteString -> Maybe PhotoInfo
+readPhotoInfo :: LS.ByteString -> Maybe PhotoInfo
 readPhotoInfo = decode
+
+
+readDirectoriesPhotoInfo :: (String -> Bool) -> [String] -> IO [Either String PhotoInfo]
+readDirectoriesPhotoInfo f ds = do
+        files <- getDirectoriesContentPaths f ds
+        mapM readOrError files
+    where
+        readOrError :: String -> IO (Either String PhotoInfo)
+        readOrError path = do
+            content <- LS.readFile path
+            let info = readPhotoInfo content
+            return $ case info of
+                 Just x -> Right x
+                 _ -> Left path
+

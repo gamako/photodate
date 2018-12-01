@@ -13,6 +13,6 @@ file_filter x = (x =~ "photo_.*\\.json" :: [[String]]) /= []
 
 main :: IO ()
 main =  do
-    lis <- getDirectoriesContentPaths file_filter meta_data_dirs
+    lis <- readDirectoriesPhotoInfo file_filter meta_data_dirs
     print lis
 
