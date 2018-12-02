@@ -2,11 +2,10 @@
 {-# LANGUAGE BangPatterns #-}
 
 module Lib
-    ( someFunc,
-    getDirectoriesContentPaths,
-    PhotoInfo (..),
-    readPhotoInfo,
-    readDirectoriesPhotoInfo
+    ( getDirectoriesContentPaths
+    , PhotoInfo (..)
+    , readPhotoInfo
+    , readDirectoriesPhotoInfo
     ) where
 
 import Data.Aeson
@@ -17,9 +16,6 @@ import qualified Data.ByteString.Lazy as LS
 import qualified Data.Map as Map
 import Data.Either
 import Debug.Trace
-
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
 
 -- 複数ディレクトリ配下のファイルのパスを
 -- ネストしないリストで返す
