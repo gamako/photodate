@@ -14,6 +14,8 @@ import Control.Applicative
 import System.Directory
 import qualified Data.ByteString.Lazy.Internal as LSI
 import qualified Data.ByteString.Lazy as LS
+import qualified Data.Map as Map
+import Data.Either
 import Debug.Trace
 
 someFunc :: IO ()
@@ -58,3 +60,14 @@ readDirectoriesPhotoInfo f ds = do
                  Just x -> Right x
                  _ -> Left path
 
+makePhotoMap :: [PhotoInfo] -> Map.Map String PhotoInfo
+makePhotoMap xs = Map.fromListWith (\x y -> x) xs'
+    where
+        xs' = map (\x -> (photo_id x, x) ) xs
+
+readDirectoriesPhotoMap ::  (String -> Bool) -> [String] -> IO (Map.Map String PhotoInfo)
+readDirectoriesPhotoMap f dirs = do
+    ps <- readDirectoriesPhotoInfo f dirs
+    let ps' = rights ps
+    let m = makePhotoMap ps'
+    return m

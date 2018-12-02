@@ -28,6 +28,7 @@ library:
   - directory
   - aeson
   - bytestring
+  - containers
 
 executables:
   photodate-exe:
