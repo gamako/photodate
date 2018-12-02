@@ -3,8 +3,8 @@
 
 module Lib
     ( getDirectoriesContentPaths
-    , photoFileFilter
-    , getDirectoriesPhotoPaths
+    , photoInfoFileFilter
+    , getDirectoriesPhotoInfoPaths
     , PhotoInfo (..)
     , readPhotoInfo
     , readDirectoriesPhotoInfo
@@ -22,27 +22,27 @@ import Data.Either
 import Debug.Trace
 
 
-photoFileFilter :: String -> Bool
-photoFileFilter x = (x =~ r :: [[String]]) /= []
+photoInfoFileFilter :: String -> Bool
+photoInfoFileFilter x = (x =~ r :: [[String]]) /= []
     where
         r = "photo_.*\\.json" :: String
 
 -- 複数ディレクトリ配下のファイルのパスを
 -- ネストしないリストで返す
 -- 第一引数はフィルタリング関数
-getDirectoriesContentPaths :: (String -> Bool) -> [String] -> IO [String]
+getDirectoriesContentPaths :: (String -> Bool) -> [FilePath] -> IO [FilePath]
 getDirectoriesContentPaths f paths = concat <$> mapM (getDirectoryContentPaths f) paths
 
 -- ディレクトリ配下のファイルのパスを返す
 -- 第一引数はフィルタリング関数
-getDirectoryContentPaths :: (String -> Bool) -> String -> IO [String]
+getDirectoryContentPaths :: (String -> Bool) -> String -> IO [FilePath]
 getDirectoryContentPaths f path = 
     map (\x -> path ++ "/" ++ x) . filter f <$> getDirectoryContents path
 
--- 複数ディレクトリ配下の写真ファイルのパスを
+-- 複数ディレクトリ配下の写真メタデータファイルのパスを
 -- ネストしないリストで返す
-getDirectoriesPhotoPaths :: [String] -> IO [String]
-getDirectoriesPhotoPaths paths = concat <$> mapM (getDirectoryContentPaths photoFileFilter) paths
+getDirectoriesPhotoInfoPaths :: [FilePath] -> IO [FilePath]
+getDirectoriesPhotoInfoPaths paths = concat <$> mapM (getDirectoryContentPaths photoInfoFileFilter) paths
 
 -- jsonから読み込むファイル情報
 data PhotoInfo = PhotoInfo { photo_id :: String, date_taken :: String } deriving (Show, Eq)
@@ -57,12 +57,12 @@ readPhotoInfo :: LS.ByteString -> Maybe PhotoInfo
 readPhotoInfo = decode
 
 
-readDirectoriesPhotoInfo :: [String] -> IO [Either String PhotoInfo]
+readDirectoriesPhotoInfo :: [FilePath] -> IO [Either String PhotoInfo]
 readDirectoriesPhotoInfo ds = do
-        files <- getDirectoriesPhotoPaths ds
+        files <- getDirectoriesPhotoInfoPaths ds
         mapM readOrError files
     where
-        readOrError :: String -> IO (Either String PhotoInfo)
+        readOrError :: FilePath -> IO (Either String PhotoInfo)
         readOrError path = do
             content <- LS.readFile path
             let !info = readPhotoInfo content
@@ -75,7 +75,7 @@ makePhotoMap xs = Map.fromListWith (\x y -> x) xs'
     where
         xs' = map (\x -> (photo_id x, x) ) xs
 
-readDirectoriesPhotoMap ::  [String] -> IO (Map.Map String PhotoInfo)
+readDirectoriesPhotoMap ::  [FilePath] -> IO (Map.Map String PhotoInfo)
 readDirectoriesPhotoMap dirs = do
     ps <- readDirectoriesPhotoInfo dirs
     let ps' = rights ps

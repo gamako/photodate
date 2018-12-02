@@ -30,6 +30,7 @@ library:
   - bytestring
   - regex-posix
   - containers
+  - time
 
 executables:
   photodate-exe:
@@ -56,3 +57,5 @@ tests:
     - hspec
     - regex-posix
     - containers
+    - time
+
