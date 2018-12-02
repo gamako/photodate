@@ -13,9 +13,13 @@ testDirs = [
     "test/testdata/part2"
     ]
 
+photoDirBase = "../../data"
+
 main :: IO ()
 main =  do
-    lis <- readDirectoriesPhotoMap metaDataDirs
-    let a = Map.lookup "10038326853" lis
+    photoInfo <- readDirectoriesPhotoMap metaDataDirs
+    let a = Map.lookup "10038326853" photoInfo
+    photos <- getDirectoriesPhotoFilePaths photoDirBase
     print a
+    print photos
 
