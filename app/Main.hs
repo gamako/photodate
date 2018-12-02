@@ -1,8 +1,7 @@
 module Main where
 
 import Lib
-import Text.Regex.Posix
-import Data.Either
+import qualified Data.Map as Map
 
 meta_data_dirs = [
     "../../data/72157675601142498_06440730dcc4_part1",
@@ -14,12 +13,9 @@ test_dirs = [
     "../../testdata/part2"
     ]
 
-file_filter :: String -> Bool
-file_filter x = (x =~ "photo_.*\\.json" :: [[String]]) /= []
-
 main :: IO ()
 main =  do
-    lis <- readDirectoriesPhotoInfo file_filter meta_data_dirs
-
-    print lis
+    lis <- readDirectoriesPhotoMap meta_data_dirs
+    let a = Map.lookup "10038326853" lis
+    print a
 

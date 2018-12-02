@@ -28,6 +28,7 @@ library:
   - directory
   - aeson
   - bytestring
+  - regex-posix
   - containers
 
 executables:
@@ -40,7 +41,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - photodate
-    - regex-posix
+    - containers
 
 tests:
   photodate-test:
@@ -54,3 +55,4 @@ tests:
     - photodate
     - hspec
     - regex-posix
+    - containers

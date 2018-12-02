@@ -1,0 +1,73 @@
+{
+	"id": "4916895077",
+	"name": "photo",
+	"description": "",
+	"count_views": "0",
+	"count_faves": "0",
+	"count_comments": "0",
+	"date_taken": "2010-08-22 13:08:48",
+	"count_tags": "0",
+	"count_notes": "0",
+	"date_imported": "2010-08-22 13:08:48",
+	"photopage": "https://www.flickr.com/photos/gamako2048/4916895077/",
+	"original": "http://farm5.staticflickr.com/4123/4916895077_d19563bafb_o.jpg",
+	"license": "All Rights Reserved",
+	"exif": {
+		"JFIF:XResolution": {
+			"full": "JFIF:XResolution",
+			"label": "X-Resolution",
+			"value": "1",
+			"raw_value": "1"
+		},
+		"JFIF:YResolution": {
+			"full": "JFIF:YResolution",
+			"label": "Y-Resolution",
+			"value": "1",
+			"raw_value": "1"
+		},
+		"IFD0:Orientation": {
+			"full": "IFD0:Orientation",
+			"label": "Orientation",
+			"value": "Horizontal (normal)",
+			"raw_value": "Horizontal (normal)"
+		},
+		"ExifIFD:FNumber": {
+			"full": "ExifIFD:FNumber",
+			"label": "Aperture",
+			"value": "f/2.8",
+			"raw_value": "2.8"
+		},
+		"ExifIFD:ColorSpace": {
+			"full": "ExifIFD:ColorSpace",
+			"label": "Color Space",
+			"value": "sRGB",
+			"raw_value": "sRGB"
+		}
+	},
+	"groups": [
+
+	],
+	"albums": [
+		{
+			"id": "72157636045299123",
+			"title": "2010iphone",
+			"url": "https://www.flickr.com/photos/gamako2048/sets/72157636045299123/"
+		}
+	],
+	"tags": [
+
+	],
+	"people": [
+
+	],
+	"notes": [
+
+	],
+	"privacy": "private",
+	"comment_permissions": "any flickr member",
+	"tagging_permissions": "people you follow",
+	"safety": "safe",
+	"comments": [
+
+	]
+}

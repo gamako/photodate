@@ -1,0 +1,49 @@
+{
+	"id": "10019000405",
+	"name": "IMG_2077",
+	"description": "",
+	"count_views": "0",
+	"count_faves": "0",
+	"count_comments": "0",
+	"date_taken": "2013-09-30 22:06:38",
+	"count_tags": "0",
+	"count_notes": "0",
+	"date_imported": "2013-09-30 06:06:38",
+	"photopage": "https://www.flickr.com/photos/gamako2048/10019000405/",
+	"original": "http://farm6.staticflickr.com/5460/10019000405_48fd190ba8_o.jpg",
+	"license": "All Rights Reserved",
+	"exif": {
+		"Orientation": "Horizontal (normal)",
+		"YCbCrPositioning": "Centered",
+		"ColorSpace": "sRGB",
+		"Compression": "JPEG (old-style)",
+		"XResolution": "1",
+		"YResolution": "1"
+	},
+	"groups": [
+
+	],
+	"albums": [
+		{
+			"id": "72157636045299123",
+			"title": "2010iphone",
+			"url": "https://www.flickr.com/photos/gamako2048/sets/72157636045299123/"
+		}
+	],
+	"tags": [
+
+	],
+	"people": [
+
+	],
+	"notes": [
+
+	],
+	"privacy": "friend & family",
+	"comment_permissions": "only you",
+	"tagging_permissions": "only you",
+	"safety": "safe",
+	"comments": [
+
+	]
+}

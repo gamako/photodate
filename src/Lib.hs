@@ -3,12 +3,16 @@
 
 module Lib
     ( getDirectoriesContentPaths
+    , photoFileFilter
+    , getDirectoriesPhotoPaths
     , PhotoInfo (..)
     , readPhotoInfo
     , readDirectoriesPhotoInfo
+    , readDirectoriesPhotoMap
     ) where
 
 import Data.Aeson
+import Text.Regex.Posix
 import Control.Applicative
 import System.Directory
 import qualified Data.ByteString.Lazy.Internal as LSI
@@ -16,6 +20,12 @@ import qualified Data.ByteString.Lazy as LS
 import qualified Data.Map as Map
 import Data.Either
 import Debug.Trace
+
+
+photoFileFilter :: String -> Bool
+photoFileFilter x = (x =~ r :: [[String]]) /= []
+    where
+        r = "photo_.*\\.json" :: String
 
 -- 複数ディレクトリ配下のファイルのパスを
 -- ネストしないリストで返す
@@ -29,6 +39,10 @@ getDirectoryContentPaths :: (String -> Bool) -> String -> IO [String]
 getDirectoryContentPaths f path = 
     map (\x -> path ++ "/" ++ x) . filter f <$> getDirectoryContents path
 
+-- 複数ディレクトリ配下の写真ファイルのパスを
+-- ネストしないリストで返す
+getDirectoriesPhotoPaths :: [String] -> IO [String]
+getDirectoriesPhotoPaths paths = concat <$> mapM (getDirectoryContentPaths photoFileFilter) paths
 
 -- jsonから読み込むファイル情報
 data PhotoInfo = PhotoInfo { photo_id :: String, date_taken :: String } deriving (Show, Eq)
@@ -43,9 +57,9 @@ readPhotoInfo :: LS.ByteString -> Maybe PhotoInfo
 readPhotoInfo = decode
 
 
-readDirectoriesPhotoInfo :: (String -> Bool) -> [String] -> IO [Either String PhotoInfo]
-readDirectoriesPhotoInfo f ds = do
-        files <- getDirectoriesContentPaths f ds
+readDirectoriesPhotoInfo :: [String] -> IO [Either String PhotoInfo]
+readDirectoriesPhotoInfo ds = do
+        files <- getDirectoriesPhotoPaths ds
         mapM readOrError files
     where
         readOrError :: String -> IO (Either String PhotoInfo)
@@ -61,9 +75,9 @@ makePhotoMap xs = Map.fromListWith (\x y -> x) xs'
     where
         xs' = map (\x -> (photo_id x, x) ) xs
 
-readDirectoriesPhotoMap ::  (String -> Bool) -> [String] -> IO (Map.Map String PhotoInfo)
-readDirectoriesPhotoMap f dirs = do
-    ps <- readDirectoriesPhotoInfo f dirs
+readDirectoriesPhotoMap ::  [String] -> IO (Map.Map String PhotoInfo)
+readDirectoriesPhotoMap dirs = do
+    ps <- readDirectoriesPhotoInfo dirs
     let ps' = rights ps
     let m = makePhotoMap ps'
     return m
