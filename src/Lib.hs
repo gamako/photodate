@@ -45,21 +45,15 @@ getDirectoryContentPaths f path =
 getDirectoriesPhotoInfoPaths :: [FilePath] -> IO [FilePath]
 getDirectoriesPhotoInfoPaths paths = concat <$> mapM (getDirectoryContentPaths photoInfoFileFilter) paths
 
+-- 写真ファイルの一覧を作成する
 getDirectoriesPhotoFilePaths :: FilePath -> IO [FilePath]
 getDirectoriesPhotoFilePaths path = do
-    dirs <- getDirectoryContents path
-    let dirs' = filter f dirs
-    let dirs'' = map (\x -> path ++ "/" ++ x) dirs'
-    ds <- concat <$> mapM f1 dirs''
-    return ds
-         where
-            f :: String -> Bool
-            f x = (x =~ ("^data-download-[0-9]+$" :: String) :: [[String]]) /= []
-            f1 :: FilePath -> IO [FilePath]
-            f1 x = do
-                paths <- getDirectoryContents x
-                let paths' = map (\y -> x ++ "/" ++ y) paths
-                return paths'
+    dirs <- map (\x -> path ++ "/" ++ x) . filter dirFilter <$> getDirectoryContents path
+    concat <$> mapM getFiles dirs
+        where
+            dirFilter :: String -> Bool
+            dirFilter x = (x =~ ("^data-download-[0-9]+$" :: String) :: [[String]]) /= []
+            getFiles x = map (\y -> x ++ "/" ++ y) <$> getDirectoryContents x
 
 -- jsonから読み込むファイル情報
 data PhotoInfo = PhotoInfo { photo_id :: String, date_taken :: String } deriving (Show, Eq)
