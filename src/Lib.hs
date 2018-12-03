@@ -20,8 +20,11 @@ import qualified Data.ByteString.Lazy.Internal as LSI
 import qualified Data.ByteString.Lazy as LS
 import qualified Data.Map as Map
 import Data.Either
+import Data.Time.Format
+import Data.Time.Calendar
+import Data.Time.Clock
+import Data.Time.Clock.POSIX
 import Debug.Trace
-
 
 photoInfoFileFilter :: String -> Bool
 photoInfoFileFilter x = (x =~ r :: [[String]]) /= []
@@ -57,6 +60,9 @@ getDirectoriesPhotoFilePaths path = do
 
 -- jsonから読み込むファイル情報
 data PhotoInfo = PhotoInfo { photo_id :: String, date_taken :: String } deriving (Show, Eq)
+
+dateTakenUTCTime :: PhotoInfo -> Maybe UTCTime
+dateTakenUTCTime x = parseTimeM True defaultTimeLocale "%Y-%-m-%-d %H:%M:%S" $ date_taken x
 
 -- aesonを使ってパースする定義
 instance FromJSON PhotoInfo where
