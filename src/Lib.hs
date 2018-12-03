@@ -78,8 +78,8 @@ readDirectoriesPhotoInfo ds = do
             content <- LS.readFile path
             let !info = readPhotoInfo content
             return $ case info of
-                 Just x -> Right x
-                 _ -> Left path
+                Just x -> Right x
+                _ -> Left path
 
 makePhotoMap :: [PhotoInfo] -> Map.Map String PhotoInfo
 makePhotoMap xs = Map.fromListWith (\x y -> x) xs'
