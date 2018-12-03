@@ -67,7 +67,7 @@ instance FromJSON PhotoInfo where
 readPhotoInfo :: LS.ByteString -> Maybe PhotoInfo
 readPhotoInfo = decode
 
-
+-- ファイル群からphotoInfoのリストを作成する
 readDirectoriesPhotoInfo :: [FilePath] -> IO [Either String PhotoInfo]
 readDirectoriesPhotoInfo ds = do
         files <- getDirectoriesPhotoInfoPaths ds
@@ -86,6 +86,7 @@ makePhotoMap xs = Map.fromListWith (\x y -> x) xs'
     where
         xs' = map (\x -> (photo_id x, x) ) xs
 
+-- ディレクトリからidをキーとしたphotoInfoのマップを作成する
 readDirectoriesPhotoMap ::  [FilePath] -> IO (Map.Map String PhotoInfo)
 readDirectoriesPhotoMap dirs = do
     ps <- readDirectoriesPhotoInfo dirs
