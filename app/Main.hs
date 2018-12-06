@@ -26,6 +26,6 @@ main =  do
     forM_ photos $ \x -> do
         let photoId = parsePhotoFileName x
         case photoId of
-            Just photoId -> return ()
+            Just photoId -> print $ x ++ ":" ++ photoId
             Nothing -> print $ x ++ ":xxxxxxxxxxxxxxxxxxxxxxx"
         

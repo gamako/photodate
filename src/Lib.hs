@@ -60,7 +60,9 @@ getDirectoriesPhotoFilePaths path = do
         where
             dirFilter :: String -> Bool
             dirFilter x = (x =~ ("^data-download-[0-9]+$" :: String) :: [[String]]) /= []
-            getFiles x = map (\y -> x ++ "/" ++ y) <$> getDirectoryContents x
+            getFiles = getDirectoryContentPaths f
+                where
+                    f x = not $ elem x [".", ".."]
 
 -- jsonから読み込むファイル情報
 data PhotoInfo = PhotoInfo { photo_id :: String, date_taken :: String } deriving (Show, Eq)
