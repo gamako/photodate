@@ -27,3 +27,7 @@ spec = do
             m <- readDirectoriesPhotoMap test_dirs
             let photo = Map.lookup "4916895077" m
             date_taken `fmap` photo `shouldBe` Just "2010-08-22 13:08:48"
+    describe "photo filename to id" $
+        it "jpgファイル"　$
+            (parsePhotoFileName "img_0001_5211165259_o.jpg") `shouldBe` Just "5211165259"
+        

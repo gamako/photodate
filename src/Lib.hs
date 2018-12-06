@@ -10,6 +10,7 @@ module Lib
     , readPhotoInfo
     , readDirectoriesPhotoInfo
     , readDirectoriesPhotoMap
+    , parsePhotoFileName
     ) where
 
 import Data.Aeson
@@ -20,10 +21,13 @@ import qualified Data.ByteString.Lazy.Internal as LSI
 import qualified Data.ByteString.Lazy as LS
 import qualified Data.Map as Map
 import Data.Either
+import Data.Either.Combinators
 import Data.Time.Format
 import Data.Time.Calendar
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
+import Text.Parsec
+import Text.Parsec.Char
 import Debug.Trace
 
 photoInfoFileFilter :: String -> Bool
@@ -99,3 +103,19 @@ readDirectoriesPhotoMap dirs = do
     let ps' = rights ps
     let m = makePhotoMap ps'
     return m
+
+-- ファイルに含まれたIDをパースする
+parsePhotoFileName :: String -> Maybe String
+parsePhotoFileName x = rightToMaybe $ parse p "hoge" x
+    where
+        p = do
+            b <- sepBy (many1 $ noneOf "_") (string "_")
+            case last2 b of
+                Nothing -> parserFail "no ID included"
+                Just x -> return x
+                where
+                    last2 :: [a] -> Maybe a
+                    last2 [] = Nothing
+                    last2 [x,_] = Just x
+                    last2 (x:xs) = last2 xs
+
