@@ -22,6 +22,7 @@ import qualified Data.ByteString.Lazy as LS
 import qualified Data.Map as Map
 import Data.Either
 import Data.Either.Combinators
+import Data.Char (isDigit)
 import Data.Time.Format
 import Data.Time.Calendar
 import Data.Time.Clock
@@ -111,13 +112,27 @@ parsePhotoFileName :: String -> Maybe String
 parsePhotoFileName x = rightToMaybe $ parse p "hoge" x
     where
         p = do
-            b <- sepBy (many1 $ noneOf "_") (string "_")
-            case last2 b of
-                Nothing -> parserFail "no ID included"
-                Just x -> return x
+            dirs
+            c <- filename
+            let d = parse fileParse "hoge2" c
+            case d of
+                Left _ -> fail "no ID included"
+                Right x -> case idFromTokens x of
+                    Nothing -> fail "no ID included"
+                    Just x -> case all isDigit x && length x > 5 of
+                        True -> return x
+                        _ -> fail "not match id"
+
                 where
-                    last2 :: [a] -> Maybe a
-                    last2 [] = Nothing
-                    last2 [x,_] = Just x
-                    last2 (x:xs) = last2 xs
+                    dir = many1 $ noneOf "/"
+                    dirs = skipMany $ try $ dir >> char '/'
+                    filename = manyTill anyChar (try (char '.' >> many1 (noneOf ".") >> eof))
+                    fileParse = sepBy (many1 (noneOf "_")) $ char '_'
+                    -- ファイル名を'_'区切りにしたものからidを抜き出す
+                    idFromTokens :: [String] -> Maybe String
+                    idFromTokens [] = Nothing
+                    idFromTokens [x,"o"] = Just x
+                    idFromTokens [x] = Just x
+                    idFromTokens (x:xs) = idFromTokens xs
+                    
 
