@@ -66,15 +66,29 @@ getDirectoriesPhotoFilePaths path = do
                     f x = not $ elem x [".", ".."]
 
 -- jsonから読み込むファイル情報
-data PhotoInfo = PhotoInfo { photo_id :: String, date_taken :: String } deriving (Show, Eq)
+data PhotoInfo = PhotoInfo { photo_id :: String, filename :: String, date_taken :: String } deriving (Show, Eq)
 
 dateTakenUTCTime :: PhotoInfo -> Maybe UTCTime
 dateTakenUTCTime x = parseTimeM True defaultTimeLocale "%Y-%-m-%-d %H:%M:%S" $ date_taken x
 
 -- aesonを使ってパースする定義
 instance FromJSON PhotoInfo where
-    parseJSON (Object v) = PhotoInfo <$> (v .: "id")
-                                     <*> (v .: "date_taken")
+    parseJSON (Object v) = do
+        id_ <- (v .: "id")
+        date_taken <- (v .: "date_taken")
+        original <-  (v .: "original")
+        case filenameFromUrl original of
+            Left x -> fail $ show x
+            Right filename -> do
+                return $ PhotoInfo id_ filename date_taken
+
+-- urlのファイル名部分を抜き出す
+filenameFromUrl :: String -> Either ParseError String
+filenameFromUrl x = parse p "hoge" x
+    where
+        p = do
+            t <- sepBy1 (Text.Parsec.many (noneOf "/")) (char '/')
+            return $ last t
 
 -- jsonから変換
 readPhotoInfo :: LS.ByteString -> Maybe PhotoInfo
@@ -104,8 +118,8 @@ readDirectoriesPhotoMap ::  [FilePath] -> IO (Map.Map String PhotoInfo)
 readDirectoriesPhotoMap dirs = do
     ps <- readDirectoriesPhotoInfo dirs
     let ps' = rights ps
-    let m = makePhotoMap ps'
-    return m
+    return $ makePhotoMap ps'
+
 
 -- ファイルに含まれたIDをパースする
 parsePhotoFileName :: String -> Maybe String
@@ -119,9 +133,7 @@ parsePhotoFileName x = rightToMaybe $ parse p "hoge" x
                 Left _ -> fail "no ID included"
                 Right x -> case idFromTokens x of
                     Nothing -> fail "no ID included"
-                    Just x -> case all isDigit x && length x > 5 of
-                        True -> return x
-                        _ -> fail "not match id"
+                    Just x -> return x
 
                 where
                     dir = many1 $ noneOf "/"
@@ -130,9 +142,15 @@ parsePhotoFileName x = rightToMaybe $ parse p "hoge" x
                     fileParse = sepBy (many1 (noneOf "_")) $ char '_'
                     -- ファイル名を'_'区切りにしたものからidを抜き出す
                     idFromTokens :: [String] -> Maybe String
-                    idFromTokens [] = Nothing
-                    idFromTokens [x,"o"] = Just x
-                    idFromTokens [x] = Just x
-                    idFromTokens (x:xs) = idFromTokens xs
+                    idFromTokens xs = idFromTokens_ $ reverse xs
+                        where
+                            idFromTokens_ :: [String] -> Maybe String
+                            idFromTokens_ [] = Nothing
+                            idFromTokens_ ("o":xs) = idFromTokens_ xs
+                            idFromTokens_ (x:xs) = case (isValidId x) of
+                                True -> Just x
+                                False -> idFromTokens_ xs
+                            isValidId x = all isDigit x && length x > 9
                     
 
+ 
