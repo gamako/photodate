@@ -7,6 +7,7 @@ import Data.Maybe (mapMaybe)
 import Text.Parsec
 import Text.Parsec.Char
 import Data.Either
+import System.Posix.Files
 
 metaDataDirs = [
     "../../data/72157675601142498_06440730dcc4_part1",
@@ -27,8 +28,18 @@ main =  do
     -- let a = Map.lookup "9890096843" photoInfo
     -- print a
     photos <- getDirectoriesPhotoFilePaths photoDirBase
-    let ids = mapMaybe parsePhotoFileName photos
-    print ids
+    forM_ photos $ \filePath -> do
+        case parsePhotoFileName filePath of
+            Nothing -> putStr "fail:" >> putStr filePath
+            Just id_ -> do
+                case Map.lookup id_ photoInfo of
+                    Nothing ->  putStr "lookup fail:" >> putStr id_
+                    Just info -> do
+                        time <- dateTakenZonedTime info
+                        putStr (filePath ++ " date_taken:") >> putStr (show $ date_taken info)  >> print time
+                        -- setFileTimesHiRes x 
+                        return ()
+
 
 
 -- チェック用

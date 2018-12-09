@@ -7,6 +7,7 @@ module Lib
     , getDirectoriesPhotoInfoPaths
     , getDirectoriesPhotoFilePaths
     , PhotoInfo (..)
+    , dateTakenZonedTime
     , readPhotoInfo
     , readDirectoriesPhotoInfo
     , readDirectoriesPhotoMap
@@ -27,6 +28,7 @@ import Data.Time.Format
 import Data.Time.Calendar
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
+import Data.Time.LocalTime
 import Text.Parsec
 import Text.Parsec.Char
 import Debug.Trace
@@ -68,8 +70,13 @@ getDirectoriesPhotoFilePaths path = do
 -- jsonから読み込むファイル情報
 data PhotoInfo = PhotoInfo { photo_id :: String, filename :: String, date_taken :: String } deriving (Show, Eq)
 
-dateTakenUTCTime :: PhotoInfo -> Maybe UTCTime
-dateTakenUTCTime x = parseTimeM True defaultTimeLocale "%Y-%-m-%-d %H:%M:%S" $ date_taken x
+dateTakenZonedTime :: PhotoInfo -> IO (Maybe ZonedTime)
+dateTakenZonedTime x = do
+    let ut = parseTimeM True defaultTimeLocale "%Y-%-m-%-d %H:%M:%S" $ date_taken x :: Maybe UTCTime
+    tz <- getCurrentTimeZone
+    let zt = utcToZonedTime tz `fmap` ut
+    return zt
+
 
 -- aesonを使ってパースする定義
 instance FromJSON PhotoInfo where
