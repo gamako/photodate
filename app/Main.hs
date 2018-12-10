@@ -7,6 +7,8 @@ import Data.Maybe (mapMaybe)
 import Text.Parsec
 import Text.Parsec.Char
 import Data.Either
+import System.Posix.Files
+import Data.Time.Clock.POSIX
 
 metaDataDirs = [
     "../../data/72157675601142498_06440730dcc4_part1",
@@ -23,13 +25,26 @@ photoDirBase = "../../data"
 main :: IO ()
 main =  do
     photoInfo <- readDirectoriesPhotoMap metaDataDirs
+    photos <- getDirectoriesPhotoFilePaths photoDirBase
     -- print photoInfo
     -- let a = Map.lookup "9890096843" photoInfo
     -- print a
-    photos <- getDirectoriesPhotoFilePaths photoDirBase
-    let ids = mapMaybe parsePhotoFileName photos
-    print ids
-
+    forM_ photos $ \filePath -> do
+        case parsePhotoFileName filePath of
+            Nothing -> putStr "fail:" >> putStrLn filePath
+            Just id_ -> do
+                case Map.lookup id_ photoInfo of
+                    Nothing ->  putStr "lookup fail:" >> putStr id_
+                    Just info -> do
+                        let time = dateTakenUTCTime info
+                        putStr (filePath ++ " date_taken:") >> putStr (show $ date_taken info)  >> print time 
+                        case time of
+                            Nothing -> fail "no time"
+                            Just time_ -> do
+                                let posixTime = utcTimeToPOSIXSeconds time_
+                                setFileTimesHiRes filePath posixTime posixTime
+                            --return ()
+                        --fail "hogehoge"
 
 -- チェック用
 -- main :: IO ()

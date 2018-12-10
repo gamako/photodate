@@ -7,6 +7,7 @@ module Lib
     , getDirectoriesPhotoInfoPaths
     , getDirectoriesPhotoFilePaths
     , PhotoInfo (..)
+    , dateTakenUTCTime
     , readPhotoInfo
     , readDirectoriesPhotoInfo
     , readDirectoriesPhotoMap

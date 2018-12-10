@@ -46,6 +46,8 @@ executables:
     - photodate
     - containers
     - parsec
+    - unix
+    - time
 
 tests:
   photodate-test:
